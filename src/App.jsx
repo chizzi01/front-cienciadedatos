@@ -4,6 +4,8 @@ import './App.css';
 function App() {
   const [formData, setFormData] = useState({
     edad: '',
+    peso: '',
+    altura: '',
     imc: '',
     hbA1c: '',
     glucosa: '',
@@ -12,7 +14,7 @@ function App() {
     dificultadCaminar: '',
     colesterol: '',
     problemasCardiacos: '',
-    malaSaludFisica: '',
+    saludFisica: '',
     ingresos: ''
   });
 
@@ -20,7 +22,8 @@ function App() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
+      imc: formData.peso / (formData.altura / 100) ** 2
     });
   };
 
@@ -37,12 +40,31 @@ function App() {
         <div className='form'>
           <div className='left-group'>
             <label>
-              Edad:
-              <input type="number" name="edad" value={formData.edad} onChange={handleChange} />
+              Rango de edad:
+              <select name="edad" value={formData.edad} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Entre 18 y 24 años</option>
+                <option value={2}>Entre 25 y 29 años</option>
+                <option value={3}>Entre 30 y 34 años</option>
+                <option value={4}>Entre 35 y 39 años</option>
+                <option value={5}>Entre 40 y 44 años</option>
+                <option value={6}>Entre 45 y 49 años</option>
+                <option value={7}>Entre 50 y 54 años</option>
+                <option value={8}>Entre 55 y 59 años</option>
+                <option value={9}>Entre 60 y 64 años</option>
+                <option value={10}>Entre 65 y 69 años</option>
+                <option value={11}>Entre 70 y 74 años</option>
+                <option value={12}>Entre 75 y 79 años</option>
+                <option value={13}>80 años o más</option>
+              </select>
             </label>
             <label>
-              IMC:
-              <input type="number" name="imc" value={formData.imc} onChange={handleChange} />
+              Peso en Kg:
+              <input type="number" name="peso" value={formData.peso} onChange={handleChange} />
+            </label>
+            <label>
+              Altura en cm:
+              <input type="number" name="altura" value={formData.altura} onChange={handleChange} />
             </label>
             <label>
               Nivel de HbA1c:
@@ -52,11 +74,6 @@ function App() {
               Nivel de glucosa en sangre:
               <input type="number" name="glucosa" value={formData.glucosa} onChange={handleChange} />
             </label>
-
-            <label>
-              Nivel de salud general:
-              <input type="text" name="saludGeneral" value={formData.saludGeneral} onChange={handleChange} />
-            </label>
             <label>
               Presión arterial:
               <input type="text" name="presionArterial" value={formData.presionArterial} onChange={handleChange} />
@@ -65,23 +82,43 @@ function App() {
           <div className='right-group'>
             <label>
               Dificultad para caminar:
-              <input type="text" name="dificultadCaminar" value={formData.dificultadCaminar} onChange={handleChange} />
+              <select name="dificultadCaminar" value={formData.dificultadCaminar} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+              </select>
             </label>
             <label>
               Colesterol:
               <input type="number" name="colesterol" value={formData.colesterol} onChange={handleChange} />
             </label>
             <label>
-              Historial de problemas cardiacos:
-              <input type="text" name="problemasCardiacos" value={formData.problemasCardiacos} onChange={handleChange} />
+              ¿Tuvo problemas cardiacos?:
+              <select name="problemasCardiacos" value={formData.problemasCardiacos} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+              </select>
             </label>
             <label>
-              Mala salud física en general:
-              <input type="text" name="malaSaludFisica" value={formData.malaSaludFisica} onChange={handleChange} />
+              Salud física en general:
+              <select name="saludFisica" value={formData.saludFisica} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Excelente</option>
+                <option value={2}>Muy Buena</option>
+                <option value={3}>Buena</option>
+                <option value={4}>Regular</option>
+                <option value={5}>Mala</option>
+              </select>
             </label>
             <label>
               Nivel de ingresos:
-              <input type="number" name="ingresos" value={formData.ingresos} onChange={handleChange} />
+              <select name="ingresos" value={formData.ingresos} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Bajo</option>
+                <option value={2}>Medio</option>
+                <option value={3}>Alto</option>
+              </select>
             </label>
           </div>
         </div>
