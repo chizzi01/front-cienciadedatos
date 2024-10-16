@@ -10,6 +10,10 @@ function App() {
     hbA1c: '',
     glucosa: '',
     saludGeneral: '',
+    sexo: '',
+    fuma: '',
+    derrame: '',
+    frutas: '',
     presionArterial: '',
     dificultadCaminar: '',
     colesterol: '',
@@ -39,6 +43,14 @@ function App() {
       <form onSubmit={handleSubmit}>
         <div className='form'>
           <div className='left-group'>
+            <label>
+              Sexo:
+              <select name="sexo" value={formData.sexo} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Masculino</option>
+                <option value={0}>Femenino</option>
+              </select>
+            </label>
             <label>
               Rango de edad:
               <select name="edad" value={formData.edad} onChange={handleChange}>
@@ -81,6 +93,14 @@ function App() {
           </div>
           <div className='right-group'>
             <label>
+              ¿Fuma?:
+              <select name="saludGeneral" value={formData.fuma} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+              </select>
+            </label>
+            <label>
               Dificultad para caminar:
               <select name="dificultadCaminar" value={formData.dificultadCaminar} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
@@ -93,6 +113,14 @@ function App() {
               <input type="number" name="colesterol" value={formData.colesterol} onChange={handleChange} />
             </label>
             <label>
+              ¿Come frutas habitualmente? :
+              <select name="saludGeneral" value={formData.frutas} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+              </select>
+            </label>
+            <label>
               ¿Tuvo problemas cardiacos?:
               <select name="problemasCardiacos" value={formData.problemasCardiacos} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
@@ -101,7 +129,15 @@ function App() {
               </select>
             </label>
             <label>
-              Salud física en general:
+              ¿Tuvo algun derrame cerebral?:
+              <select name="saludGeneral" value={formData.derrame} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+              </select>
+            </label>
+            <label>
+              ¿Cómo considera su salud física?:
               <select name="saludFisica" value={formData.saludFisica} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
                 <option value={1}>Excelente</option>
