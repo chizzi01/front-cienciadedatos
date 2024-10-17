@@ -80,11 +80,11 @@ function App() {
             </label>
             <label>
               Nivel de HbA1c:
-              <input type="number" name="hbA1c" value={formData.hbA1c} onChange={handleChange} />
+              <input type="number" name="hbA1c" min={3.5} max={9} value={formData.hbA1c} onChange={handleChange} />
             </label>
             <label>
               Nivel de glucosa en sangre:
-              <input type="number" name="glucosa" value={formData.glucosa} onChange={handleChange} />
+              <input type="number" name="glucosa" min={80} max={300} value={formData.glucosa} onChange={handleChange} />
             </label>
             <label>
               Presión arterial:
