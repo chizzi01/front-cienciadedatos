@@ -92,6 +92,10 @@ function App() {
             </label>
           </div>
           <div className='right-group'>
+          <label>
+              Colesterol:
+              <input type="number" name="colesterol" value={formData.colesterol} onChange={handleChange} />
+            </label>
             <label>
               ¿Fuma?:
               <select name="saludGeneral" value={formData.fuma} onChange={handleChange}>
@@ -107,10 +111,6 @@ function App() {
                 <option value={1}>Sí</option>
                 <option value={0}>No</option>
               </select>
-            </label>
-            <label>
-              Colesterol:
-              <input type="number" name="colesterol" value={formData.colesterol} onChange={handleChange} />
             </label>
             <label>
               ¿Come frutas habitualmente? :
@@ -147,15 +147,15 @@ function App() {
                 <option value={5}>Mala</option>
               </select>
             </label>
-            <label>
+            {/* <label>
               Nivel de ingresos:
               <select name="ingresos" value={formData.ingresos} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Bajo</option>
-                <option value={2}>Medio</option>
-                <option value={3}>Alto</option>
+                <option value={1}>Menos de $10.000</option>
+                <option value={5}>Menos de $35.000</option>
+                <option value={8}>Mas de $75.000</option>
               </select>
-            </label>
+            </label> */}
           </div>
         </div>
         <button type="submit">Enviar</button>
