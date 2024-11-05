@@ -1,174 +1,125 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
-import { Line, Bar, Pie } from 'react-chartjs-2';
-import { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import { Pie, Bar, Bubble } from 'react-chartjs-2';
+import { Chart as ChartJS, Tooltip, Legend, Title, ArcElement, CategoryScale, LinearScale, BarElement, PointElement } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
+ChartJS.register(Tooltip, Legend, Title, ArcElement, CategoryScale, LinearScale, BarElement, PointElement);
 
-const Charts = () => {
-  const lineChartRef = useRef(null);
-  const barChartRef = useRef(null);
-  const pieChartRef = useRef(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    const lineChart = lineChartRef.current;
-    const barChart = barChartRef.current;
-    const pieChart = pieChartRef.current;
-
-    return () => {
-      if (lineChart) {
-        lineChart.destroy();
-      }
-      if (barChart) {
-        barChart.destroy();
-      }
-      if (pieChart) {
-        pieChart.destroy();
-      }
-    };
-  }, []);
-
-  const lineData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'Dataset 1',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }
-    ]
+const Dashboard = () => {
+  // Hardcoded data for the charts
+  const diabetesData = {
+    labels: ['Con Diabetes', 'Sin Diabetes'],
+    datasets: [{
+      label: 'Estado de Diabetes',
+      data: [55, 45],
+      backgroundColor: ['#FF6384', '#36A2EB'],
+    }]
   };
 
-  const barData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'Dataset 1',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1
-      }
-    ]
+  const ageData = {
+    labels: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'],
+    datasets: [{
+      label: 'Cantidad de Personas con Diabetes por Edad',
+      data: [5, 10, 15, 20, 25, 30],
+      backgroundColor: '#FFCE56',
+    }]
   };
 
-  const pieData = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
-        ],
-        borderWidth: 1
-      }
-    ]
+  const hypertensionData = {
+    labels: ['Con Hipertensión', 'Sin Hipertensión'],
+    datasets: [{
+      label: 'Predicción de Hipertensión',
+      data: [40, 60],
+      backgroundColor: ['#FF6384', '#36A2EB'],
+    }]
   };
 
-  if (!isMounted) {
-    return null;
-  }
+  const heartDiseaseData = {
+    labels: ['Con Enfermedades Cardiacas', 'Sin Enfermedades Cardiacas'],
+    datasets: [{
+      label: 'Predicción de Enfermedades Cardiacas',
+      data: [30, 70],
+      backgroundColor: ['#FF6384', '#36A2EB'],
+    }]
+  };
 
-  const chartOptions = {
-    maintainAspectRatio: false,
-    responsive: true
+  const bmiData = {
+    labels: ['Bajo Peso', 'Peso Normal', 'Sobrepeso', 'Obesidad'],
+    datasets: [{
+      label: 'Distribución del IMC',
+      data: [10, 50, 25, 15], 
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+    }]
+  };
+
+  const bubbleData = {
+    datasets: [{
+      label: 'Relación Edad vs IMC con Tamaño de Burbujas',
+      data: [
+        { x: 25, y: 22.0, r: 10 },
+        { x: 30, y: 27.5, r: 15 },
+        { x: 35, y: 30.0, r: 20 },
+        { x: 40, y: 32.5, r: 25 },
+        { x: 45, y: 28.0, r: 10 },
+        { x: 50, y: 26.0, r: 15 },
+        { x: 55, y: 29.5, r: 20 },
+        { x: 60, y: 31.0, r: 25 },
+        { x: 65, y: 33.0, r: 30 },
+        { x: 70, y: 34.5, r: 35 }
+      ],
+      backgroundColor: '#FF6384'
+    }]
+  };
+
+  const bubbleOptions = {
+    scales: {
+      x: {
+        type: 'linear',
+        position: 'bottom',
+        title: {
+          display: true,
+          text: 'Edad'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'IMC'
+        }
+      }
+    }
   };
 
   return (
-    <div>
-        {/* <div>
-            <h1>Mi Prediccion</h1>
-            <div className='miHistorial-table'>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>IMC</th>
-                            <th>Diabetes</th>
-                            <th>Presión Arterial</th>
-                            <th>Colesterol</th>
-                            <th>Problemas Cardiacos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2024-10-01</td>
-                            <td>25.5</td>
-                            <td>0</td>
-                            <td>120/80</td>
-                            <td>200</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>2024-10-02</td>
-                            <td>26.5</td>
-                            <td>0</td>
-                            <td>120/80</td>
-                            <td>200</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>2024-10-03</td>
-                            <td>27.5</td>
-                            <td>0</td>
-                            <td>120/80</td>
-                            <td>200</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>2024-10-04</td>
-                            <td>28.5</td>
-                            <td>0</td>
-                            <td>120/80</td>
-                            <td>200</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>2024-10-05</td>
-                            <td>29.5</td>
-                            <td>0</td>
-                            <td>120/80</td>
-                            <td>200</td>
-                            <td>0</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div> */}
-
-      <div className='chart-container'>
-        <h2>Diabetes Historica</h2>
-        <div className='chart-wrapper'>
-          <Pie ref={pieChartRef} data={pieData} options={chartOptions} />
+    <div className="dashboard-container">
+      <h1 className="dashboard-title">Dashboard de Salud</h1>
+      <div className="charts-container">
+        <div className="chart-card">
+          <h3>Estado de Diabetes</h3>
+          <Pie data={diabetesData} style={{ maxWidth: '300px', maxHeight: '300px', margin: '0 auto' }} />
         </div>
-        <h2>Probabilidad por mes</h2>
-        <div className='chart-wrapper'>
-          <Line ref={lineChartRef} data={lineData} options={chartOptions} />
+        <div className="chart-card">
+          <h3>Cantidad de Personas con Diabetes por Edad</h3>
+          <Bar data={ageData} />
         </div>
-        <h2>Diabetes por edad admin</h2>
-        <div className='chart-wrapper'>
-          <Bar ref={barChartRef} data={barData} options={chartOptions} />
+        <div className="chart-card">
+          <h3>Predicción de Hipertensión</h3>
+          <Bar data={hypertensionData} />
+        </div>
+        <div className="chart-card">
+          <h3>Predicción de Enfermedades Cardiacas</h3>
+          <Bar data={heartDiseaseData} />
+        </div>
+        <div className="chart-card">
+          <h3>Distribución del IMC</h3>
+          <Bar data={bmiData} />
+        </div>
+        <div className="chart-card">
+          <h3>Relación Edad vs IMC con Tamaño de Burbujas</h3>
+          <Bubble data={bubbleData} options={bubbleOptions} />
         </div>
       </div>
     </div>
   );
 };
 
-export default Charts;
+export default Dashboard;
