@@ -38,7 +38,6 @@ function Form() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Process form data to determine diabetes risk
     console.log(formData);
   };
 
@@ -48,14 +47,6 @@ function Form() {
       <form onSubmit={handleSubmit}>
         <div className='form'>
           <div className='left-group'>
-            <label>
-              Sexo:
-              <select name="sexo" value={formData.sexo} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Masculino</option>
-                <option value={0}>Femenino</option>
-              </select>
-            </label>
             <label>
               Rango de edad:
               <select name="edad" value={formData.edad} onChange={handleChange}>
@@ -95,7 +86,7 @@ function Form() {
               Presión arterial alta?
               <select name="presionArterial" value={formData.presionArterial} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Si</option>
+                <option value={1}>Sí</option>
                 <option value={0}>No</option>
               </select>
             </label>
@@ -116,7 +107,7 @@ function Form() {
               ¿Colesterol alto?
               <select name="colesterol" value={formData.colesterol} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Si</option>
+                <option value={1}>Sí</option>
                 <option value={0}>No</option>
               </select>
             </label>
@@ -127,14 +118,14 @@ function Form() {
                 <option value={1}>Sí</option>
                 <option value={0}>No</option>
               </select>
-              <label >
+            </label>
+            <label>
               ¿Se ha chequeado el colesterol recientemente?:
-              <select name="chequeColesterol" value={formData.chequeoColesterol} onChange={handleChange}>
+              <select name="chequeoColesterol" value={formData.chequeoColesterol} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
                 <option value={1}>Sí</option>
                 <option value={0}>No</option>
               </select>
-              </label>
             </label>
             <label>
               ¿Tiene dificultad para caminar?:
@@ -168,50 +159,6 @@ function Form() {
                 <option value={0}>No</option>
               </select>
             </label>
-            {/* <label>
-              ¿Tuvo problemas cardiacos?:
-              <select name="problemasCardiacos" value={formData.problemasCardiacos} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
-            </label>
-            <label>
-              ¿Tuvo algun derrame cerebral?:
-              <select name="stroke" value={formData.derrame} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
-            </label>
-            <label>
-              ¿Cómo considera su salud física?:
-              <select name="saludFisica" value={formData.saludFisica} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Excelente</option>
-                <option value={2}>Muy Buena</option>
-                <option value={3}>Buena</option>
-                <option value={4}>Regular</option>
-                <option value={5}>Mala</option>
-              </select>
-            </label>
-            <label>
-              Nivel de ingresos:
-              <select name="ingresos" value={formData.ingresos} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Menos de $10.000</option>
-                <option value={5}>Menos de $35.000</option>
-                <option value={8}>Mas de $75.000</option>
-              </select>
-            </label>
-            <label>
-              ¿Realiza actividad fisica?:
-              <select name="actFisica" value={formData.actFisica} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
-            </label> */}
           </div>
         </div>
         <button type="submit">Enviar</button>
