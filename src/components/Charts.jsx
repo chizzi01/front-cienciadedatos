@@ -1,125 +1,235 @@
-import React from 'react';
-import { Pie, Bar, Bubble } from 'react-chartjs-2';
-import { Chart as ChartJS, Tooltip, Legend, Title, ArcElement, CategoryScale, LinearScale, BarElement, PointElement } from 'chart.js';
+import React, { useState, useEffect } from 'react';
+import { Pie, Bar, Bubble, Scatter } from 'react-chartjs-2';
+import { getDiabetesHistory, getHeartDiseaseHistory } from '../controllers/chart';
+import {
+  Chart as ChartJS,
+  Tooltip,
+  Legend,
+  Title,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement
+} from 'chart.js';
 
 ChartJS.register(Tooltip, Legend, Title, ArcElement, CategoryScale, LinearScale, BarElement, PointElement);
 
 const Dashboard = () => {
-  // Hardcoded data for the charts
-  const diabetesData = {
-    labels: ['Con Diabetes', 'Sin Diabetes'],
-    datasets: [{
-      label: 'Estado de Diabetes',
-      data: [55, 45],
-      backgroundColor: ['#FF6384', '#36A2EB'],
-    }]
-  };
+  const [diabetesData, setDiabetesData] = useState(null);
+  const [heartDiseaseData, setHeartDiseaseData] = useState(null);
+  const [ageData, setAgeData] = useState(null);
+  const [bmiData, setBmiData] = useState(null);
+  const [cholesterolData, setCholesterolData] = useState(null);
+  const [activityData, setActivityData] = useState(null);
 
-  const ageData = {
-    labels: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'],
-    datasets: [{
-      label: 'Cantidad de Personas con Diabetes por Edad',
-      data: [5, 10, 15, 20, 25, 30],
-      backgroundColor: '#FFCE56',
-    }]
-  };
+  // GRAFICOS MEDICOS
+  const [ageVsBmi, setAgeVsBmi] = useState(null);
+  const [probabilityVsAge, setProbabilityVsAge] = useState(null);
+  const [bloodGlucoseVsHbA1c, setBloodGlucoseVsHbA1c] = useState(null);
+  const [bmiVsHeartProbability, setBmiVsHeartProbability] = useState(null);
 
-  const hypertensionData = {
-    labels: ['Con Hipertensión', 'Sin Hipertensión'],
-    datasets: [{
-      label: 'Predicción de Hipertensión',
-      data: [40, 60],
-      backgroundColor: ['#FF6384', '#36A2EB'],
-    }]
-  };
+  useEffect(() => {
+    // Llamada a la API para datos de diabetes
+    getDiabetesHistory().then((data) => {
+      const diabetesCount = {
+        withDiabetes: data.filter(item => item.resultado === 'positivo').length,
+        withoutDiabetes: data.filter(item => item.resultado === 'negativo').length,
+      };
 
-  const heartDiseaseData = {
-    labels: ['Con Enfermedades Cardiacas', 'Sin Enfermedades Cardiacas'],
-    datasets: [{
-      label: 'Predicción de Enfermedades Cardiacas',
-      data: [30, 70],
-      backgroundColor: ['#FF6384', '#36A2EB'],
-    }]
-  };
+      // Configuración de datos para el gráfico de diabetes
+      setDiabetesData({
+        labels: ['Con Diabetes', 'Sin Diabetes'],
+        datasets: [{
+          label: 'Estado de Diabetes',
+          data: [diabetesCount.withDiabetes, diabetesCount.withoutDiabetes],
+          backgroundColor: ['#FF6384', '#36A2EB'],
+        }]
+      });
 
-  const bmiData = {
-    labels: ['Bajo Peso', 'Peso Normal', 'Sobrepeso', 'Obesidad'],
-    datasets: [{
-      label: 'Distribución del IMC',
-      data: [10, 50, 25, 15], 
-      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-    }]
-  };
+      // Procesamiento de datos de edad para el gráfico de diabetes por edad
+      const ageGroups = [0, 0, 0, 0, 0, 0];
+      data.forEach(item => {
+        const age = item.Age;
+        if (age <= 24) ageGroups[0]++;
+        else if (age <= 34) ageGroups[1]++;
+        else if (age <= 44) ageGroups[2]++;
+        else if (age <= 54) ageGroups[3]++;
+        else if (age <= 64) ageGroups[4]++;
+        else ageGroups[5]++;
+      });
 
-  const bubbleData = {
-    datasets: [{
-      label: 'Relación Edad vs IMC con Tamaño de Burbujas',
-      data: [
-        { x: 25, y: 22.0, r: 10 },
-        { x: 30, y: 27.5, r: 15 },
-        { x: 35, y: 30.0, r: 20 },
-        { x: 40, y: 32.5, r: 25 },
-        { x: 45, y: 28.0, r: 10 },
-        { x: 50, y: 26.0, r: 15 },
-        { x: 55, y: 29.5, r: 20 },
-        { x: 60, y: 31.0, r: 25 },
-        { x: 65, y: 33.0, r: 30 },
-        { x: 70, y: 34.5, r: 35 }
-      ],
-      backgroundColor: '#FF6384'
-    }]
-  };
+      setAgeData({
+        labels: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'],
+        datasets: [{
+          label: 'Cantidad de Personas con Diabetes por Edad',
+          data: ageGroups,
+          backgroundColor: '#FFCE56',
+        }]
+      });
 
-  const bubbleOptions = {
-    scales: {
-      x: {
-        type: 'linear',
-        position: 'bottom',
-        title: {
-          display: true,
-          text: 'Edad'
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'IMC'
-        }
-      }
-    }
-  };
 
-  return (
+      // GRAFICOS MEDICOS
+      // Relación Edad vs. BMI (Scatter)
+      const ageBmiData = data.map(item => ({ x: item.Age, y: item.BMI }));
+      setAgeVsBmi({
+        datasets: [{
+          label: 'Edad vs. BMI',
+          data: ageBmiData,
+          backgroundColor: '#36A2EB',
+        }]
+      });
+
+      // Relación Probabilidad de Diabetes vs. Edad (Bubble)
+      const probabilityAgeData = data.map(item => ({
+        x: item.Age,
+        y: item.probabilidad,
+        r: item.probabilidad * 10  // Ajuste de tamaño de burbuja según probabilidad
+      }));
+      setProbabilityVsAge({
+        datasets: [{
+          label: 'Probabilidad de Diabetes vs. Edad',
+          data: probabilityAgeData,
+          backgroundColor: '#FF6384',
+        }]
+      });
+    });
+
+    // Llamada a la API para datos de enfermedades cardíacas
+    getHeartDiseaseHistory().then((data) => {
+      const heartDiseaseCount = {
+        withHeartDisease: data.filter(item => item.probabilidad >= 0.5).length,
+        withoutHeartDisease: data.filter(item => item.probabilidad < 0.5).length,
+      };
+
+      // Configuración de datos para el gráfico de enfermedades cardíacas
+      setHeartDiseaseData({
+        labels: ['Con Enfermedades Cardiacas', 'Sin Enfermedades Cardiacas'],
+        datasets: [{
+          label: 'Predicción de Enfermedades Cardiacas',
+          data: [heartDiseaseCount.withHeartDisease, heartDiseaseCount.withoutHeartDisease],
+          backgroundColor: ['#FF6384', '#36A2EB'],
+        }]
+      });
+
+
+
+      const cholesterolGroups = [0, 0, 0];
+      data.forEach(item => {
+        const cholesterol = item.Colesterol;
+        if (cholesterol < 200) cholesterolGroups[0]++;
+        else if (cholesterol < 240) cholesterolGroups[1]++;
+        else cholesterolGroups[2]++;
+      });
+
+      setCholesterolData({
+        labels: ['Bajo', 'Normal', 'Alto'],
+        datasets: [{
+          label: 'Distribución del Colesterol',
+          data: cholesterolGroups,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        }]
+      });
+
+
+      // GRAFICOS MEDICOS
+      // Procesamiento de datos de IMC para el gráfico de distribución del IMC
+      const bmiGroups = [0, 0, 0, 0];
+      data.forEach(item => {
+        const bmi = item.BMI;
+        if (bmi < 18.5) bmiGroups[0]++;
+        else if (bmi < 25) bmiGroups[1]++;
+        else if (bmi < 30) bmiGroups[2]++;
+        else bmiGroups[3]++;
+      });
+
+      setBmiData({
+        labels: ['Bajo Peso', 'Peso Normal', 'Sobrepeso', 'Obesidad'],
+        datasets: [{
+          label: 'Distribución del IMC',
+          data: bmiGroups,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+        }]
+      });
+
+      // Relación Glucosa vs. HbA1c (Scatter)
+      const glucoseHbA1cData = data.map(item => ({
+        x: item.BloodGlucoseLevel,
+        y: item.HbA1cLevel
+      }));
+      setBloodGlucoseVsHbA1c({
+        datasets: [{
+          label: 'Nivel de Glucosa vs. HbA1c',
+          data: glucoseHbA1cData,
+          backgroundColor: '#4BC0C0',
+        }]
+      });
+
+      // Relación BMI vs. Probabilidad de Enfermedad Cardíaca (Bubble)
+      const bmiHeartProbData = data.map(item => ({
+        x: item.BMI,
+        y: item.probabilidad,
+        r: item.probabilidad * 10  // Ajuste de tamaño de burbuja según probabilidad
+      }));
+      setBmiVsHeartProbability({
+        datasets: [{
+          label: 'BMI vs. Probabilidad de Enfermedad Cardíaca',
+          data: bmiHeartProbData,
+          backgroundColor: '#FFCE56',
+        }]
+      });
+
+    });
+  }, []);
+
+ 
+
+   return (
     <div className="dashboard-container">
       <h1 className="dashboard-title">Dashboard de Salud</h1>
       <div className="charts-container">
         <div className="chart-card">
           <h3>Estado de Diabetes</h3>
-          <Pie data={diabetesData} style={{ maxWidth: '300px', maxHeight: '300px', margin: '0 auto' }} />
+          {diabetesData ? <Pie data={diabetesData} style={{ maxWidth: '300px', maxHeight: '300px', margin: '0 auto' }} /> : <p>Cargando datos...</p>}
         </div>
         <div className="chart-card">
           <h3>Cantidad de Personas con Diabetes por Edad</h3>
-          <Bar data={ageData} />
-        </div>
-        <div className="chart-card">
-          <h3>Predicción de Hipertensión</h3>
-          <Bar data={hypertensionData} />
+          {ageData ? <Bar data={ageData} /> : <p>Cargando datos...</p>}
         </div>
         <div className="chart-card">
           <h3>Predicción de Enfermedades Cardiacas</h3>
-          <Bar data={heartDiseaseData} />
+          {heartDiseaseData ? <Bar data={heartDiseaseData} /> : <p>Cargando datos...</p>}
+        </div>
+        <div className="chart-card">
+          <h3>Distribución del Colesterol</h3>
+          {cholesterolData ? <Bar data={cholesterolData} /> : <p>Cargando datos...</p>}
         </div>
         <div className="chart-card">
           <h3>Distribución del IMC</h3>
-          <Bar data={bmiData} />
+          {bmiData ? <Bar data={bmiData} /> : <p>Cargando datos...</p>}
+        </div>
+        
+        {/* GRAFICOS MEDICOS */}
+        <div className="chart-card">
+          <h3>Edad vs. BMI</h3>
+          {ageVsBmi ? <Scatter data={ageVsBmi} /> : <p>Cargando datos...</p>}
         </div>
         <div className="chart-card">
-          <h3>Relación Edad vs IMC con Tamaño de Burbujas</h3>
-          <Bubble data={bubbleData} options={bubbleOptions} />
+          <h3>Probabilidad de Diabetes vs. Edad</h3>
+          {probabilityVsAge ? <Bubble data={probabilityVsAge} /> : <p>Cargando datos...</p>}
+        </div>
+        <div className="chart-card">
+          <h3>Nivel de Glucosa vs. HbA1c</h3>
+          {bloodGlucoseVsHbA1c ? <Scatter data={bloodGlucoseVsHbA1c} /> : <p>Cargando datos...</p>}
+        </div>
+        <div className="chart-card">
+          <h3>BMI vs. Probabilidad de Enfermedad Cardíaca</h3>
+          {bmiVsHeartProbability ? <Bubble data={bmiVsHeartProbability} /> : <p>Cargando datos...</p>}
         </div>
       </div>
     </div>
   );
 };
+
 
 export default Dashboard;
