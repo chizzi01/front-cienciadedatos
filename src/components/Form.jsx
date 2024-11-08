@@ -27,6 +27,9 @@ function Form() {
     alcohol: ''
   });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [probability, setProbability] = useState(0);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -36,9 +39,21 @@ function Form() {
     });
   };
 
+  const calculateProbability = (data) => {
+    // Implement your probability calculation logic here
+    // For demonstration, we'll use a dummy probability value
+    return Math.random() * 100;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    const prob = calculateProbability(formData);
+    setProbability(prob);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -163,6 +178,21 @@ function Form() {
         </div>
         <button type="submit">Enviar</button>
       </form>
+
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>&times;</span>
+            <h2>Resultado</h2>
+            <p>La probabilidad de que tenga diabetes es: {probability.toFixed(2)}%</p>
+            {probability > 50 && (
+              <p style={{ color: '#ff4a4a', fontWeight: 'bold' }}>
+                Se recomienda ir a un médico para hacerse un chequeo más exhaustivo.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

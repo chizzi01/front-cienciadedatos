@@ -24,7 +24,7 @@ function Login() {
       const response = await login(formData.email, formData.password);
       console.log(response);
       if (response == 200) {
-        window.location.href = '/form';
+        window.location.href = '/reporte';
       }
     }
     catch (error) {
