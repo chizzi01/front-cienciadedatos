@@ -184,7 +184,8 @@ function Form() {
           <div className="modal-content">
             <span className="close" onClick={closeModal}>&times;</span>
             <h2>Resultado</h2>
-            <p>La probabilidad de que tenga diabetes es: {probability.toFixed(2)}%</p>
+            <p>La probabilidad de que tenga diabetes es: </p>
+              <h3>{probability.toFixed(2)}%</h3>
             {probability > 50 && (
               <p style={{ color: '#ff4a4a', fontWeight: 'bold' }}>
                 Se recomienda ir a un médico para hacerse un chequeo más exhaustivo.

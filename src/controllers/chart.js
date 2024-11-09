@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/';
+const apiUrl = import.meta.env.VITE_BACK_ROOT;
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGhvdG1haWwuY29tIiwiZXhwIjoxNzMwOTM4MjAxfQ.5VEzInUfxfPn2qhRg94ndT4WkszfMddKNP8m6iYV0Cc'
 
 export const getDiabetesHistory = async () => {
@@ -20,7 +20,7 @@ export const getDiabetesHistory = async () => {
 
 export const getHeartDiseaseHistory = async () => {
   try {
-    const response = await axios.get(`${API_URL}historial-cardiaco`, {
+    const response = await axios.get(`${apiUrl}/historial-cardiaco`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
