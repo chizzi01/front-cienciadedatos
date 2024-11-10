@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_BACK_ROOT;
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcmllbHEiLCJleHAiOjE3MzEyMDkzMzJ9.DkzE5A8pQKG9GO288FsMLNl3mhJF13Psddv9d283DpU'
+const token = localStorage.getItem('token');
 
 export const getDiabetesHistory = async () => {
   try {
