@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pie, Bar, Bubble, Scatter } from 'react-chartjs-2';
+import { Pie, Bar } from 'react-chartjs-2';
 import { getDiabetesHistory, getHeartDiseaseHistory } from '../controllers/chart';
 import {
   Chart as ChartJS,
@@ -21,23 +21,18 @@ const Dashboard = () => {
   const [ageData, setAgeData] = useState(null);
   const [bmiData, setBmiData] = useState(null);
   const [cholesterolData, setCholesterolData] = useState(null);
-  const [activityData, setActivityData] = useState(null);
-
-  // GRAFICOS MEDICOS
-  const [ageVsBmi, setAgeVsBmi] = useState(null);
-  const [probabilityVsAge, setProbabilityVsAge] = useState(null);
-  const [bloodGlucoseVsHbA1c, setBloodGlucoseVsHbA1c] = useState(null);
-  const [bmiVsHeartProbability, setBmiVsHeartProbability] = useState(null);
+  const [generalHealthData, setGeneralHealthData] = useState(null);
+  const [highBPData, setHighBPData] = useState(null);
+  const [doctorVisitData, setDoctorVisitData] = useState(null);
+  const [highBPHeartDiseaseData, setHighBPHeartDiseaseData] = useState(null);
 
   useEffect(() => {
-    // Llamada a la API para datos de diabetes
     getDiabetesHistory().then((data) => {
       const diabetesCount = {
         withDiabetes: data.filter(item => item.resultado === 'positivo').length,
         withoutDiabetes: data.filter(item => item.resultado === 'negativo').length,
       };
 
-      // Configuración de datos para el gráfico de diabetes
       setDiabetesData({
         labels: ['Con Diabetes', 'Sin Diabetes'],
         datasets: [{
@@ -47,15 +42,14 @@ const Dashboard = () => {
         }]
       });
 
-      // Procesamiento de datos de edad para el gráfico de diabetes por edad
       const ageGroups = [0, 0, 0, 0, 0, 0];
       data.forEach(item => {
         const age = item.Age;
-        if (age <= 24) ageGroups[0]++;
-        else if (age <= 34) ageGroups[1]++;
-        else if (age <= 44) ageGroups[2]++;
-        else if (age <= 54) ageGroups[3]++;
-        else if (age <= 64) ageGroups[4]++;
+        if (age === 1) ageGroups[0]++;
+        else if (age === 2 || age === 3) ageGroups[1]++;
+        else if (age === 4 || age === 5) ageGroups[2]++;
+        else if (age === 6 || age === 7) ageGroups[3]++;
+        else if (age === 8 || age === 9) ageGroups[4]++;
         else ageGroups[5]++;
       });
 
@@ -68,72 +62,22 @@ const Dashboard = () => {
         }]
       });
 
-
-      // GRAFICOS MEDICOS
-      // Relación Edad vs. BMI (Scatter)
-      const ageBmiData = data.map(item => ({ x: item.Age, y: item.BMI }));
-      setAgeVsBmi({
-        datasets: [{
-          label: 'Edad vs. BMI',
-          data: ageBmiData,
-          backgroundColor: '#36A2EB',
-        }]
+      const cholesterolGroups = [0, 0];
+      data.forEach(item => {
+        const cholesterol = item.HighChol;
+        if (cholesterol == 0) cholesterolGroups[0]++;
+        else cholesterolGroups[1]++;
       });
 
-      // Relación Probabilidad de Diabetes vs. Edad (Bubble)
-      const probabilityAgeData = data.map(item => ({
-        x: item.Age,
-        y: item.probabilidad,
-        r: item.probabilidad * 10  // Ajuste de tamaño de burbuja según probabilidad
-      }));
-      setProbabilityVsAge({
+      setCholesterolData({
+        labels: ['Normal', 'Alto'],
         datasets: [{
-          label: 'Probabilidad de Diabetes vs. Edad',
-          data: probabilityAgeData,
-          backgroundColor: '#FF6384',
-        }]
-      });
-    });
-
-    // Llamada a la API para datos de enfermedades cardíacas
-    getHeartDiseaseHistory().then((data) => {
-      const heartDiseaseCount = {
-        withHeartDisease: data.filter(item => item.probabilidad >= 0.5).length,
-        withoutHeartDisease: data.filter(item => item.probabilidad < 0.5).length,
-      };
-
-      // Configuración de datos para el gráfico de enfermedades cardíacas
-      setHeartDiseaseData({
-        labels: ['Con Enfermedades Cardiacas', 'Sin Enfermedades Cardiacas'],
-        datasets: [{
-          label: 'Predicción de Enfermedades Cardiacas',
-          data: [heartDiseaseCount.withHeartDisease, heartDiseaseCount.withoutHeartDisease],
+          label: 'Distribución del Colesterol',
+          data: cholesterolGroups,
           backgroundColor: ['#FF6384', '#36A2EB'],
         }]
       });
 
-
-
-      const cholesterolGroups = [0, 0, 0];
-      data.forEach(item => {
-        const cholesterol = item.Colesterol;
-        if (cholesterol < 200) cholesterolGroups[0]++;
-        else if (cholesterol < 240) cholesterolGroups[1]++;
-        else cholesterolGroups[2]++;
-      });
-
-      setCholesterolData({
-        labels: ['Bajo', 'Normal', 'Alto'],
-        datasets: [{
-          label: 'Distribución del Colesterol',
-          data: cholesterolGroups,
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-        }]
-      });
-
-
-      // GRAFICOS MEDICOS
-      // Procesamiento de datos de IMC para el gráfico de distribución del IMC
       const bmiGroups = [0, 0, 0, 0];
       data.forEach(item => {
         const bmi = item.BMI;
@@ -152,39 +96,124 @@ const Dashboard = () => {
         }]
       });
 
-      // Relación Glucosa vs. HbA1c (Scatter)
-      const glucoseHbA1cData = data.map(item => ({
-        x: item.BloodGlucoseLevel,
-        y: item.HbA1cLevel
-      }));
-      setBloodGlucoseVsHbA1c({
+      const generalHealthGroups = [0, 0, 0, 0, 0];
+      data.forEach(item => {
+        const health = item.GenHlth;
+        if (health === 1) generalHealthGroups[0]++;
+        else if (health === 2) generalHealthGroups[1]++;
+        else if (health === 3) generalHealthGroups[2]++;
+        else if (health === 4) generalHealthGroups[3]++;
+        else generalHealthGroups[4]++;
+      });
+
+      setGeneralHealthData({
+        labels: ['Excelente', 'Muy Buena', 'Buena', 'Regular', 'Mala'],
         datasets: [{
-          label: 'Nivel de Glucosa vs. HbA1c',
-          data: glucoseHbA1cData,
-          backgroundColor: '#4BC0C0',
+          label: 'Distribución de la Salud General',
+          data: generalHealthGroups,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
         }]
       });
 
-      // Relación BMI vs. Probabilidad de Enfermedad Cardíaca (Bubble)
-      const bmiHeartProbData = data.map(item => ({
-        x: item.BMI,
-        y: item.probabilidad,
-        r: item.probabilidad * 10  // Ajuste de tamaño de burbuja según probabilidad
-      }));
-      setBmiVsHeartProbability({
+      const highBPGroups = [0, 0];
+      data.forEach(item => {
+        const highBP = item.HighBP;
+        if (highBP == 0) highBPGroups[0]++;
+        else highBPGroups[1]++;
+      });
+
+      setHighBPData({
+        labels: ['No', 'Sí'],
         datasets: [{
-          label: 'BMI vs. Probabilidad de Enfermedad Cardíaca',
-          data: bmiHeartProbData,
-          backgroundColor: '#FFCE56',
+          label: 'Distribución de la Presión Arterial Alta',
+          data: highBPGroups,
+          backgroundColor: ['#FF6384', '#36A2EB'],
         }]
+      });
+
+      const doctorVisitGroups = {
+        withDiabetes: [0, 0],
+        withoutDiabetes: [0, 0]
+      };
+      data.forEach(item => {
+        const wentToDoctor = item.ultimo_ano_al_medico;
+        if (item.resultado === 'positivo') {
+          if (wentToDoctor == 1) doctorVisitGroups.withDiabetes[0]++;
+          else doctorVisitGroups.withDiabetes[1]++;
+        } else {
+          if (wentToDoctor == 1) doctorVisitGroups.withoutDiabetes[0]++;
+          else doctorVisitGroups.withoutDiabetes[1]++;
+        }
+      });
+
+      setDoctorVisitData({
+        labels: ['Fueron al Médico', 'No Fueron al Médico'],
+        datasets: [
+          {
+            label: 'Con Diabetes',
+            data: doctorVisitGroups.withDiabetes,
+            backgroundColor: '#FF6384',
+          },
+          {
+            label: 'Sin Diabetes',
+            data: doctorVisitGroups.withoutDiabetes,
+            backgroundColor: '#36A2EB',
+          }
+        ]
+      });
+
+    });
+
+    getHeartDiseaseHistory().then((data) => {
+      const heartDiseaseCount = {
+        withHeartDisease: data.filter(item => item.probabilidad >= 0.5).length,
+        withoutHeartDisease: data.filter(item => item.probabilidad < 0.5).length,
+      };
+
+      setHeartDiseaseData({
+        labels: ['Con Enfermedades Cardiacas', 'Sin Enfermedades Cardiacas'],
+        datasets: [{
+          label: 'Predicción de Enfermedades Cardiacas',
+          data: [heartDiseaseCount.withHeartDisease, heartDiseaseCount.withoutHeartDisease],
+          backgroundColor: ['#FF6384', '#36A2EB'],
+        }]
+      });
+
+      const highBPHeartDiseaseGroups = {
+        withHeartDisease: [0, 0],
+        withoutHeartDisease: [0, 0]
+      };
+      data.forEach(item => {
+        const highBP = item.HighBP;
+        if (item.probabilidad >= 0.5) {
+          if (highBP == 1) highBPHeartDiseaseGroups.withHeartDisease[0]++;
+          else highBPHeartDiseaseGroups.withHeartDisease[1]++;
+        } else {
+          if (highBP == 1) highBPHeartDiseaseGroups.withoutHeartDisease[0]++;
+          else highBPHeartDiseaseGroups.withoutHeartDisease[1]++;
+        }
+      });
+
+      setHighBPHeartDiseaseData({
+        labels: ['Con Presión Alta', 'Sin Presión Alta'],
+        datasets: [
+          {
+            label: 'Con Enfermedades Cardiacas',
+            data: highBPHeartDiseaseGroups.withHeartDisease,
+            backgroundColor: '#FF6384',
+          },
+          {
+            label: 'Sin Enfermedades Cardiacas',
+            data: highBPHeartDiseaseGroups.withoutHeartDisease,
+            backgroundColor: '#36A2EB',
+          }
+        ]
       });
 
     });
   }, []);
 
- 
-
-   return (
+  return (
     <div className="dashboard-container">
       <h1 className="dashboard-title">Dashboard de Salud</h1>
       <div className="charts-container">
@@ -208,28 +237,25 @@ const Dashboard = () => {
           <h3>Distribución del IMC</h3>
           {bmiData ? <Bar data={bmiData} /> : <p>Cargando datos...</p>}
         </div>
-        
-        {/* GRAFICOS MEDICOS */}
         <div className="chart-card">
-          <h3>Edad vs. BMI</h3>
-          {ageVsBmi ? <Scatter data={ageVsBmi} /> : <p>Cargando datos...</p>}
+          <h3>Distribución de la Salud General</h3>
+          {generalHealthData ? <Bar data={generalHealthData} /> : <p>Cargando datos...</p>}
         </div>
         <div className="chart-card">
-          <h3>Probabilidad de Diabetes vs. Edad</h3>
-          {probabilityVsAge ? <Bubble data={probabilityVsAge} /> : <p>Cargando datos...</p>}
+          <h3>Distribución de la Presión Arterial Alta</h3>
+          {highBPData ? <Bar data={highBPData} /> : <p>Cargando datos...</p>}
         </div>
         <div className="chart-card">
-          <h3>Nivel de Glucosa vs. HbA1c</h3>
-          {bloodGlucoseVsHbA1c ? <Scatter data={bloodGlucoseVsHbA1c} /> : <p>Cargando datos...</p>}
+          <h3>Visitas al Médico en el Último Año</h3>
+          {doctorVisitData ? <Bar data={doctorVisitData} /> : <p>Cargando datos...</p>}
         </div>
-        <div className="chart-card">
-          <h3>BMI vs. Probabilidad de Enfermedad Cardíaca</h3>
-          {bmiVsHeartProbability ? <Bubble data={bmiVsHeartProbability} /> : <p>Cargando datos...</p>}
-        </div>
+        {/* <div className="chart-card">
+          <h3>Relación entre Presión Arterial Alta y Enfermedades Cardiacas</h3>
+          {highBPHeartDiseaseData ? <Bar data={highBPHeartDiseaseData} /> : <p>Cargando datos...</p>}
+        </div> */}
       </div>
     </div>
   );
 };
-
 
 export default Dashboard;

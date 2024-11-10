@@ -1,11 +1,11 @@
 const apiUrl = import.meta.env.VITE_BACK_ROOT;
 
-const login = async (email, contraseña) => {
+const login = async (user, contraseña) => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-        username: email,
+        username: user,
         password: contraseña
       });
 

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import '../App.css';
+import postFormularioDiabetes from '../controllers/postFormularioDiabetes';
+import postFormularioCardiaco from '../controllers/postFormularioCardiaco';
 
 function Form() {
   const [formData, setFormData] = useState({
@@ -10,25 +12,21 @@ function Form() {
     hbA1c: '',
     glucosa: '',
     saludGeneral: '',
-    sexo: '',
-    fuma: '',
-    derrame: '',
-    frutas: '',
     presionArterial: '',
     dificultadCaminar: '',
     colesterol: '',
     problemasCardiacos: '',
     saludFisica: '',
-    ingresos: '',
-    stroke: '',
-    chequeoColesterol: '',
-    actFisica: '',
-    vegetales: '',
-    alcohol: ''
+    chequeoMedico: '',
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [probability, setProbability] = useState(0);
+  const [isHeartCheckModalOpen, setIsHeartCheckModalOpen] = useState(false);
+  const [result, setResult] = useState({});
+  const [showHeartCheckForm, setShowHeartCheckForm] = useState(false);
+  const [resultCardiaco, setResultCardiaco] = useState({});
+  const [isModalCardiaco, setIsModalCardiaco] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,21 +37,70 @@ function Form() {
     });
   };
 
-  const calculateProbability = (data) => {
-    // Implement your probability calculation logic here
-    // For demonstration, we'll use a dummy probability value
-    return Math.random() * 100;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const prob = calculateProbability(formData);
-    setProbability(prob);
-    setIsModalOpen(true);
+    try {
+      const diabetesResult = await postFormularioDiabetes(formData.saludGeneral, formData.presionArterial, formData.imc, formData.dificultadCaminar, formData.colesterol, formData.edad, formData.problemasCardiacos, formData.saludFisica, formData.chequeoMedico);
+      setResult(diabetesResult);
+      setIsModalOpen(true);
+      if (diabetesResult.probabilidad_diabetes >= 0.5) {
+        setIsHeartCheckModalOpen(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const closeHeartCheckModal = () => {
+    setIsHeartCheckModalOpen(false);
+    setShowHeartCheckForm(false);
+    setIsModalOpen(false);
+  };
+
+  const handleHeartCloseCardiaco = () => {
+    setIsModalCardiaco(false);
+    setIsModalOpen(false);
+  };
+
+  const handleHeartCheckSubmit = async (e) => {
+    e.preventDefault();
+    setIsModalCardiaco(true);
+    try {
+      const edadMaxima = getEdadMaxima(formData.edad);
+      console.log(formData.hbA1c, formData.glucosa, formData.imc, edadMaxima);
+      const cardiacoResult = await postFormularioCardiaco(formData.hbA1c, formData.glucosa, formData.imc, edadMaxima);
+      setResultCardiaco(cardiacoResult);
+      setShowHeartCheckForm(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getEdadMaxima = (edad) => {
+    const edadesMaximas = {
+      1: 24,
+      2: 29,
+      3: 34,
+      4: 39,
+      5: 44,
+      6: 49,
+      7: 54,
+      8: 59,
+      9: 64,
+      10: 69,
+      11: 74,
+      12: 79,
+      13: 80,
+    };
+    return edadesMaximas[edad] || 0;
+  };
+
+  const handleHeartCheckAccept = () => {
+    setShowHeartCheckForm(true);
   };
 
   return (
@@ -90,20 +137,8 @@ function Form() {
               <input type="number" name="altura" value={formData.altura} onChange={handleChange} />
             </label>
             <label>
-              Nivel de HbA1c:
-              <input type="number" name="hbA1c" min={3.5} max={9} value={formData.hbA1c} onChange={handleChange} />
-            </label>
-            <label>
-              Nivel de glucosa en sangre:
-              <input type="number" name="glucosa" min={80} max={300} value={formData.glucosa} onChange={handleChange} />
-            </label>
-            <label>
-              Presión arterial alta?
-              <select name="presionArterial" value={formData.presionArterial} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
+              ¿Cuantos dias lleva con malestar?:
+              <input type="number" name="saludFisica" min={0} max={30} value={formData.saludFisica} onChange={handleChange} />
             </label>
             <label>
               ¿Cómo considera su salud general?:
@@ -119,6 +154,14 @@ function Form() {
           </div>
           <div className='right-group'>
             <label>
+              Presión arterial alta?
+              <select name="presionArterial" value={formData.presionArterial} onChange={handleChange}>
+                <option value='' hidden>Selecciona una opción</option>
+                <option value={1}>Sí</option>
+                <option value={0}>No</option>
+              </select>
+            </label>
+            <label>
               ¿Colesterol alto?
               <select name="colesterol" value={formData.colesterol} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
@@ -127,16 +170,8 @@ function Form() {
               </select>
             </label>
             <label>
-              ¿Fuma?:
-              <select name="fuma" value={formData.fuma} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
-            </label>
-            <label>
-              ¿Se ha chequeado el colesterol recientemente?:
-              <select name="chequeoColesterol" value={formData.chequeoColesterol} onChange={handleChange}>
+              ¿Fue al medico en el último año?:
+              <select name="chequeoMedico" value={formData.chequeoMedico} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
                 <option value={1}>Sí</option>
                 <option value={0}>No</option>
@@ -151,24 +186,8 @@ function Form() {
               </select>
             </label>
             <label>
-              ¿Come frutas habitualmente? :
-              <select name="frutas" value={formData.frutas} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
-            </label>
-            <label>
-              ¿Come vegetales habitualmente? :
-              <select name="vegetales" value={formData.vegetales} onChange={handleChange}>
-                <option value='' hidden>Selecciona una opción</option>
-                <option value={1}>Sí</option>
-                <option value={0}>No</option>
-              </select>
-            </label>
-            <label>
-              ¿Consume mucho alcohol? :
-              <select name="alcohol" value={formData.alcohol} onChange={handleChange}>
+              ¿Tiene alguna enfermedad cardiaca? :
+              <select name="problemasCardiacos" value={formData.problemasCardiacos} onChange={handleChange}>
                 <option value='' hidden>Selecciona una opción</option>
                 <option value={1}>Sí</option>
                 <option value={0}>No</option>
@@ -185,12 +204,49 @@ function Form() {
             <span className="close" onClick={closeModal}>&times;</span>
             <h2>Resultado</h2>
             <p>La probabilidad de que tenga diabetes es: </p>
-              <h3>{probability.toFixed(2)}%</h3>
-            {probability > 50 && (
-              <p style={{ color: '#ff4a4a', fontWeight: 'bold' }}>
-                Se recomienda ir a un médico para hacerse un chequeo más exhaustivo.
-              </p>
+            <h3>{(result.probabilidad_diabetes * 100).toFixed(2)}%</h3>
+            {result.probabilidad_diabetes >= 0.5 && (
+              <div>
+                <p style={{ color: '#ff4a4a', fontWeight: 'bold' }}>
+                  Se recomienda ir a un médico para hacerse un chequeo más exhaustivo.
+                </p>
+                <p>¿Desea realizar un chequeo de enfermedades cardiacas?</p>
+                <p>Se pedirá que tenga a mano los siguientes datos: Nivel de HbA1c y Nivel de glucosa en sangre</p>
+                <button onClick={handleHeartCheckAccept}>Sí</button>
+                <button style={{marginTop:10}} onClick={closeHeartCheckModal}>No</button>
+              </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {isHeartCheckModalOpen && showHeartCheckForm && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeHeartCheckModal}>&times;</span>
+            <h2>Formulario de Chequeo Cardíaco</h2>
+            <form onSubmit={handleHeartCheckSubmit}>
+              <label style={{width:"100%"}}>
+                Nivel de HbA1c:
+                <input type="number" name="hbA1c" min={3.5} max={9} value={formData.hbA1c} onChange={handleChange} />
+              </label>
+              <label style={{width:"100%"}}>
+                Nivel de glucosa en sangre:
+                <input type="number" name="glucosa" min={80} max={300} value={formData.glucosa} onChange={handleChange} />
+              </label>
+              <button type="submit">Enviar</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isModalCardiaco && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleHeartCloseCardiaco}>&times;</span>
+            <h2>Resultado del Chequeo Cardíaco</h2>
+            <p>La probabilidad de que tenga problemas cardiacos es: </p>
+            <h3>{(resultCardiaco.probabilidad_cardiaco * 100).toFixed(2)}%</h3>
           </div>
         </div>
       )}

@@ -4,7 +4,7 @@ import login from '../controllers/login';
 
 function Login() {
   const [formData, setFormData] = useState({
-    email: '',
+    user: '',
     password: ''
   });
 
@@ -21,7 +21,7 @@ function Login() {
       e.preventDefault();
       // Process form data to determine diabetes risk
       console.log(formData);
-      const response = await login(formData.email, formData.password);
+      const response = await login(formData.user, formData.password);
       console.log(response);
       if (response == 200) {
         window.location.href = '/reporte';
@@ -38,7 +38,7 @@ function Login() {
       <form onSubmit={handleSubmit} className='loginAlign'>
         <label>
           Usuario:
-          <input type="email" name="email" value={formData.email} onChange={handleChange} />
+          <input type="text" name="user" value={formData.user} onChange={handleChange} />
         </label>
         <label>
           Password:

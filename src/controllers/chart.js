@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_BACK_ROOT;
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGhvdG1haWwuY29tIiwiZXhwIjoxNzMwOTM4MjAxfQ.5VEzInUfxfPn2qhRg94ndT4WkszfMddKNP8m6iYV0Cc'
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcmllbHEiLCJleHAiOjE3MzEyMDkzMzJ9.DkzE5A8pQKG9GO288FsMLNl3mhJF13Psddv9d283DpU'
 
 export const getDiabetesHistory = async () => {
   try {
-    const response = await axios.get(`${API_URL}historial-diabetes`, {
+    const response = await axios.get(`${apiUrl}/historial-diabetes`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
